@@ -1,7 +1,16 @@
 
 import React from 'react';
-import { ShoppingBag, Search, User, Menu } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { ShoppingCart, User, LogOut } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface HeaderProps {
   cartItemCount: number;
@@ -9,53 +18,80 @@ interface HeaderProps {
 }
 
 const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
-  return (
-    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center">
-            <h1 className="text-2xl font-bold text-gray-900">ShopFlow</h1>
-          </Link>
+  const { user, signOut, loading } = useAuth();
 
-          {/* Navigation */}
+  const handleSignOut = async () => {
+    await signOut();
+  };
+
+  return (
+    <header className="bg-white shadow-sm border-b">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-16">
+          <div className="flex items-center">
+            <Link to="/" className="text-2xl font-bold text-blue-600">
+              ShopEasy
+            </Link>
+          </div>
+          
           <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+            <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors">
               Home
             </Link>
-            <Link to="/products" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+            <Link to="/products" className="text-gray-700 hover:text-blue-600 transition-colors">
               Products
             </Link>
-            <Link to="/about" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+            <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
               About
             </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-gray-900 font-medium transition-colors">
+            <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">
               Contact
             </Link>
           </nav>
 
-          {/* Right side icons */}
           <div className="flex items-center space-x-4">
-            <button className="text-gray-700 hover:text-gray-900 transition-colors">
-              <Search className="h-5 w-5" />
-            </button>
-            <button className="text-gray-700 hover:text-gray-900 transition-colors">
-              <User className="h-5 w-5" />
-            </button>
-            <button 
+            <button
               onClick={onCartClick}
-              className="relative text-gray-700 hover:text-gray-900 transition-colors"
+              className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
-              <ShoppingBag className="h-5 w-5" />
+              <ShoppingCart className="h-6 w-6" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
                 </span>
               )}
             </button>
-            <button className="md:hidden text-gray-700 hover:text-gray-900">
-              <Menu className="h-5 w-5" />
-            </button>
+
+            {!loading && (
+              <>
+                {user ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                        <User className="h-4 w-4" />
+                        <span className="hidden sm:inline">Account</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem disabled>
+                        {user.email}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem onClick={handleSignOut}>
+                        <LogOut className="h-4 w-4 mr-2" />
+                        Sign Out
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <Link to="/auth">
+                    <Button variant="outline" size="sm">
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
+              </>
+            )}
           </div>
         </div>
       </div>
