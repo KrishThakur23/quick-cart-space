@@ -1,21 +1,14 @@
 
 import React, { useState } from 'react';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
-
-interface Product {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  category: string;
-}
+import { useProducts } from '../hooks/useProducts';
 
 interface ProductsProps {
-  onAddToCart: (product: Product) => void;
+  onAddToCart: (product: any) => void;
 }
 
 const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
+  const { products, isLoading, error } = useProducts();
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   
   const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
@@ -23,6 +16,26 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
   const filteredProducts = selectedCategory === 'All' 
     ? products 
     : products.filter(p => p.category === selectedCategory);
+
+  if (isLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <p>Loading products...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="text-center">
+          <p className="text-red-600">{error}</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -49,15 +62,27 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
       </div>
 
       {/* Products Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={product}
-            onAddToCart={onAddToCart}
-          />
-        ))}
-      </div>
+      {filteredProducts.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={{
+                id: parseInt(product.id.slice(0, 8), 16), // Convert UUID to number for cart compatibility
+                name: product.name,
+                price: product.price,
+                image: product.image || '',
+                category: product.category
+              }}
+              onAddToCart={onAddToCart}
+            />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No products found in this category.</p>
+        </div>
+      )}
     </div>
   );
 };

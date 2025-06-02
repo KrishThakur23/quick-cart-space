@@ -2,7 +2,7 @@
 import React from 'react';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
-import { products } from '../data/products';
+import { useProducts } from '../hooks/useProducts';
 import { Star, Truck, Shield, Headphones } from 'lucide-react';
 
 interface Product {
@@ -18,6 +18,7 @@ interface IndexProps {
 }
 
 const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
+  const { products, isLoading } = useProducts();
   const featuredProducts = products.slice(0, 3);
 
   return (
@@ -61,15 +62,31 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Products</h2>
             <p className="text-gray-600">Check out our most popular items</p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={onAddToCart}
-              />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="text-center">
+              <p>Loading featured products...</p>
+            </div>
+          ) : featuredProducts.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {featuredProducts.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={{
+                    id: parseInt(product.id.slice(0, 8), 16), // Convert UUID to number for cart compatibility
+                    name: product.name,
+                    price: product.price,
+                    image: product.image || '',
+                    category: product.category
+                  }}
+                  onAddToCart={onAddToCart}
+                />
+              ))}
+            </div>
+          ) : (
+            <div className="text-center">
+              <p className="text-gray-500">No products available yet.</p>
+            </div>
+          )}
         </div>
       </section>
 
