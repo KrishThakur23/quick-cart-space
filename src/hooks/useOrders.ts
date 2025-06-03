@@ -76,9 +76,10 @@ export const useOrders = () => {
     customer_address?: string;
     user_id: string;
   }) => {
+    // Create order with 'paid' status since payment was processed
     const { data, error } = await supabase
       .from('orders')
-      .insert([orderData])
+      .insert([{ ...orderData, status: 'paid' }])
       .select();
 
     if (error) {
