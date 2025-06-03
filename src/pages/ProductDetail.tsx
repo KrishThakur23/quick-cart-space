@@ -20,7 +20,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
   const { id } = useParams<{ id: string }>();
   const { products, isLoading } = useProducts();
   
-  const product = products.find(p => p.id.slice(0, 8) === id?.padStart(8, '0'));
+  // Find product by matching the hex ID
+  const product = products.find(p => {
+    const hexId = parseInt(p.id.slice(0, 8), 16).toString(16).padStart(8, '0');
+    return hexId === id;
+  });
 
   if (isLoading) {
     return (
@@ -90,7 +94,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
               image: product.image || '',
               category: product.category
             })}
-            className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2"
+            className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
           >
             <ShoppingBag className="h-5 w-5" />
             <span>Add to Cart</span>

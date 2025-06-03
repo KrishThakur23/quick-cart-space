@@ -29,22 +29,22 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-blue-600">
-              ShopEasy
+            <Link to="/" className="text-2xl font-bold text-green-600">
+              Bonemart
             </Link>
           </div>
           
           <nav className="hidden md:flex space-x-8">
-            <Link to="/" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/" className="text-gray-700 hover:text-green-600 transition-colors">
               Home
             </Link>
-            <Link to="/products" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/products" className="text-gray-700 hover:text-green-600 transition-colors">
               Products
             </Link>
-            <Link to="/about" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/about" className="text-gray-700 hover:text-green-600 transition-colors">
               About
             </Link>
-            <Link to="/contact" className="text-gray-700 hover:text-blue-600 transition-colors">
+            <Link to="/contact" className="text-gray-700 hover:text-green-600 transition-colors">
               Contact
             </Link>
           </nav>
@@ -52,11 +52,11 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
           <div className="flex items-center space-x-4">
             <button
               onClick={onCartClick}
-              className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
+              className="relative p-2 text-gray-700 hover:text-green-600 transition-colors"
             >
               <ShoppingCart className="h-6 w-6" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                   {cartItemCount}
                 </span>
               )}

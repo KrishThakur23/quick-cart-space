@@ -31,8 +31,8 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center">
-              <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Truck className="h-8 w-8 text-blue-600" />
+              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Truck className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="text-lg font-semibold mb-2">Free Shipping</h3>
               <p className="text-gray-600">Free shipping on orders over $50</p>
@@ -45,8 +45,8 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
               <p className="text-gray-600">Your payment information is secure</p>
             </div>
             <div className="text-center">
-              <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <Headphones className="h-8 w-8 text-purple-600" />
+              <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
+                <Headphones className="h-8 w-8 text-green-600" />
               </div>
               <h3 className="text-lg font-semibold mb-2">24/7 Support</h3>
               <p className="text-gray-600">We're here to help anytime</p>

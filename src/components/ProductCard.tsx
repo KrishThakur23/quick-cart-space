@@ -16,9 +16,12 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
+  // Convert the numeric ID to a hex string for the URL
+  const productId = product.id.toString(16).padStart(8, '0');
+
   return (
     <div className="group bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-300 border">
-      <Link to={`/product/${product.id}`}>
+      <Link to={`/product/${productId}`}>
         <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-t-lg">
           <img
             src={product.image}
@@ -28,8 +31,8 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         </div>
       </Link>
       <div className="p-4">
-        <Link to={`/product/${product.id}`}>
-          <h3 className="text-lg font-medium text-gray-900 hover:text-blue-600 transition-colors">
+        <Link to={`/product/${productId}`}>
+          <h3 className="text-lg font-medium text-gray-900 hover:text-green-600 transition-colors">
             {product.name}
           </h3>
         </Link>
@@ -38,7 +41,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
           <span className="text-xl font-bold text-gray-900">${product.price}</span>
           <button
             onClick={() => onAddToCart(product)}
-            className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors text-sm font-medium"
+            className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-colors text-sm font-medium"
           >
             Add to Cart
           </button>
