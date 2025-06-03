@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
+import { useOrders } from '@/hooks/useOrders';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,12 +11,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Pencil, Trash2, Plus, Package, ShoppingCart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Dashboard = () => {
   const { user, loading } = useAuth();
   const { products, isLoading, refetch } = useProducts();
+  const { orders, isLoading: ordersLoading, updateOrderStatus } = useOrders();
   const { toast } = useToast();
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -136,6 +139,22 @@ const Dashboard = () => {
     }
   };
 
+  const handleStatusUpdate = async (orderId: string, newStatus: string) => {
+    const { error } = await updateOrderStatus(orderId, newStatus);
+    if (error) {
+      toast({
+        title: "Error",
+        description: "Failed to update order status",
+        variant: "destructive",
+      });
+    } else {
+      toast({
+        title: "Success",
+        description: "Order status updated successfully",
+      });
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       name: '',
@@ -147,6 +166,17 @@ const Dashboard = () => {
     });
     setEditingProduct(null);
     setShowAddForm(false);
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending': return 'text-yellow-600 bg-yellow-100';
+      case 'processing': return 'text-blue-600 bg-blue-100';
+      case 'shipped': return 'text-purple-600 bg-purple-100';
+      case 'delivered': return 'text-green-600 bg-green-100';
+      case 'cancelled': return 'text-red-600 bg-red-100';
+      default: return 'text-gray-600 bg-gray-100';
+    }
   };
 
   return (
@@ -164,7 +194,7 @@ const Dashboard = () => {
           </TabsTrigger>
           <TabsTrigger value="orders" className="flex items-center space-x-2">
             <ShoppingCart className="h-4 w-4" />
-            <span>Orders</span>
+            <span>Orders ({orders.length})</span>
           </TabsTrigger>
         </TabsList>
 
@@ -304,12 +334,86 @@ const Dashboard = () => {
         <TabsContent value="orders" className="space-y-6">
           <div>
             <h2 className="text-xl font-semibold mb-4">Order Management</h2>
-            <Card>
-              <CardContent className="p-6">
-                <p className="text-gray-500 text-center">Order management functionality will be implemented here.</p>
-                <p className="text-gray-500 text-center mt-2">This will allow you to view and manage customer orders.</p>
-              </CardContent>
-            </Card>
+            {ordersLoading ? (
+              <div className="text-center py-8">
+                <p>Loading orders...</p>
+              </div>
+            ) : orders.length > 0 ? (
+              <Card>
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Order ID</TableHead>
+                        <TableHead>Product</TableHead>
+                        <TableHead>Customer</TableHead>
+                        <TableHead>Quantity</TableHead>
+                        <TableHead>Total</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {orders.map((order) => (
+                        <TableRow key={order.id}>
+                          <TableCell className="font-mono text-xs">
+                            {order.id.slice(0, 8)}...
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center space-x-2">
+                              {order.products?.image && (
+                                <img 
+                                  src={order.products.image} 
+                                  alt={order.products?.name}
+                                  className="w-8 h-8 object-cover rounded"
+                                />
+                              )}
+                              <span>{order.products?.name}</span>
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div>
+                              <div className="font-medium">{order.customer_name}</div>
+                              <div className="text-sm text-gray-500">{order.customer_email}</div>
+                            </div>
+                          </TableCell>
+                          <TableCell>{order.quantity}</TableCell>
+                          <TableCell>${order.total_amount}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
+                              {order.status}
+                            </span>
+                          </TableCell>
+                          <TableCell>
+                            {new Date(order.created_at).toLocaleDateString()}
+                          </TableCell>
+                          <TableCell>
+                            <select
+                              value={order.status}
+                              onChange={(e) => handleStatusUpdate(order.id, e.target.value)}
+                              className="text-sm border rounded px-2 py-1"
+                            >
+                              <option value="pending">Pending</option>
+                              <option value="processing">Processing</option>
+                              <option value="shipped">Shipped</option>
+                              <option value="delivered">Delivered</option>
+                              <option value="cancelled">Cancelled</option>
+                            </select>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card>
+                <CardContent className="p-6">
+                  <p className="text-gray-500 text-center">No orders yet. Orders will appear here when customers place them.</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </TabsContent>
       </Tabs>

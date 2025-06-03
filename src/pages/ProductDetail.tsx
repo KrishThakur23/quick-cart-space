@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, Navigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
-import { ShoppingBag, Star } from 'lucide-react';
+import { ShoppingBag, Star, Package } from 'lucide-react';
+import OrderForm from '../components/OrderForm';
 
 interface Product {
   id: number;
@@ -19,6 +20,7 @@ interface ProductDetailProps {
 const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
   const { id } = useParams<{ id: string }>();
   const { products, isLoading } = useProducts();
+  const [showOrderForm, setShowOrderForm] = useState(false);
   
   // Find product by matching the hex ID
   const product = products.find(p => {
@@ -37,6 +39,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
   if (!product) {
     return <Navigate to="/products" replace />;
   }
+
+  const cartProduct = {
+    id: parseInt(product.id.slice(0, 8), 16),
+    name: product.name,
+    price: product.price,
+    image: product.image || '',
+    category: product.category
+  };
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -86,21 +96,36 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
             </div>
           )}
 
-          <button
-            onClick={() => onAddToCart({
-              id: parseInt(product.id.slice(0, 8), 16),
-              name: product.name,
-              price: product.price,
-              image: product.image || '',
-              category: product.category
-            })}
-            className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
-          >
-            <ShoppingBag className="h-5 w-5" />
-            <span>Add to Cart</span>
-          </button>
+          <div className="space-y-3">
+            <button
+              onClick={() => onAddToCart(cartProduct)}
+              className="w-full bg-green-600 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center space-x-2"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              <span>Add to Cart</span>
+            </button>
+            
+            <button
+              onClick={() => setShowOrderForm(true)}
+              className="w-full bg-green-800 text-white py-3 px-6 rounded-lg font-medium hover:bg-green-900 transition-colors flex items-center justify-center space-x-2"
+            >
+              <Package className="h-5 w-5" />
+              <span>Order Now</span>
+            </button>
+          </div>
         </div>
       </div>
+
+      <OrderForm
+        product={{
+          id: product.id,
+          name: product.name,
+          price: product.price,
+          user_id: product.user_id
+        }}
+        isOpen={showOrderForm}
+        onClose={() => setShowOrderForm(false)}
+      />
     </div>
   );
 };
