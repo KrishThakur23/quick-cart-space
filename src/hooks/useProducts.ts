@@ -10,6 +10,7 @@ export interface Product {
   category: string;
   description: string | null;
   features: string[] | null;
+  user_id: string; // Added user_id property
 }
 
 export const useProducts = () => {
