@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { HoverCard, HoverCardContent, HoverCardTrigger } from '@/components/ui/hover-card';
 import { Tag, Info } from 'lucide-react';
@@ -18,8 +18,6 @@ interface ProductCardProps {
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
-  const [isHovered, setIsHovered] = useState(false);
-  
   // Convert the numeric ID to a hex string for the URL
   const productId = product.id.toString(16).padStart(8, '0');
 
@@ -36,11 +34,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   };
 
   return (
-    <div 
-      className="group bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border relative overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="group bg-white rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 border relative overflow-hidden">
       <Link to={`/product/${productId}`}>
         <div className="aspect-w-1 aspect-h-1 w-full overflow-hidden rounded-t-lg relative">
           <img
@@ -48,35 +42,6 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             alt={product.name}
             className="h-64 w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
           />
-          {/* Overlay showing ALL categories and subcategories */}
-          <div className={`absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center transition-opacity duration-300 overflow-y-auto ${
-            isHovered ? 'opacity-100' : 'opacity-0'
-          }`}>
-            <div className="text-white text-center p-4 max-h-full overflow-y-auto">
-              <div className="flex items-center justify-center mb-3">
-                <Tag className="h-4 w-4 mr-2" />
-                <span className="font-bold text-lg">All Categories</span>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                {Object.entries(allCategoriesData).map(([category, subcategories]) => (
-                  <div key={category} className="text-left">
-                    <div className={`font-semibold mb-1 ${
-                      category === product.category ? 'text-green-400' : 'text-white'
-                    }`}>
-                      {category}
-                    </div>
-                    <div className="space-y-1">
-                      {subcategories.map((sub, index) => (
-                        <div key={index} className="bg-white bg-opacity-10 px-2 py-1 rounded text-xs">
-                          {sub}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
         </div>
       </Link>
       

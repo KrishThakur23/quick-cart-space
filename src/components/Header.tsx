@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Settings } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Settings, ChevronDown } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -11,6 +11,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from '@/components/ui/navigation-menu';
 
 interface HeaderProps {
   cartItemCount: number;
@@ -23,6 +30,18 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   const handleSignOut = async () => {
     await signOut();
   };
+
+  // All available categories
+  const categories = [
+    'Electronics',
+    'Clothing', 
+    'Home & Garden',
+    'Sports',
+    'Books',
+    'Health',
+    'Automotive',
+    'Toys'
+  ];
 
   return (
     <header className="bg-white shadow-sm border-b">
@@ -38,9 +57,41 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             <Link to="/" className="text-gray-700 hover:text-green-600 transition-colors">
               Home
             </Link>
-            <Link to="/products" className="text-gray-700 hover:text-green-600 transition-colors">
-              Products
-            </Link>
+            
+            <NavigationMenu>
+              <NavigationMenuList>
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className="text-gray-700 hover:text-green-600 transition-colors bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
+                    Products
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent>
+                    <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
+                      <div className="col-span-2">
+                        <Link
+                          to="/products"
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">All Products</div>
+                          <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                            Browse our complete collection of products
+                          </p>
+                        </Link>
+                      </div>
+                      {categories.map((category) => (
+                        <Link
+                          key={category}
+                          to={`/products?category=${encodeURIComponent(category)}`}
+                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-colors hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground"
+                        >
+                          <div className="text-sm font-medium leading-none">{category}</div>
+                        </Link>
+                      ))}
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
+              </NavigationMenuList>
+            </NavigationMenu>
+            
             <Link to="/about" className="text-gray-700 hover:text-green-600 transition-colors">
               About
             </Link>
