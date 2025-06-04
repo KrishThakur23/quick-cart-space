@@ -23,17 +23,16 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
   // Convert the numeric ID to a hex string for the URL
   const productId = product.id.toString(16).padStart(8, '0');
 
-  // Mock subcategories for demonstration
-  const getSubcategories = (category: string) => {
-    const subcategoryMap: { [key: string]: string[] } = {
-      'Electronics': ['Smartphones', 'Laptops', 'Accessories', 'Gaming'],
-      'Clothing': ['Men\'s Wear', 'Women\'s Wear', 'Accessories', 'Shoes'],
-      'Home & Garden': ['Furniture', 'Decor', 'Tools', 'Plants'],
-      'Sports': ['Equipment', 'Apparel', 'Footwear', 'Accessories'],
-      'Books': ['Fiction', 'Non-Fiction', 'Educational', 'Comics'],
-      'Health': ['Supplements', 'Personal Care', 'Fitness', 'Medical'],
-    };
-    return subcategoryMap[category] || ['General', 'Popular', 'New', 'Sale'];
+  // All available categories and their subcategories
+  const allCategoriesData = {
+    'Electronics': ['Smartphones', 'Laptops', 'Accessories', 'Gaming', 'Audio', 'Cameras'],
+    'Clothing': ['Men\'s Wear', 'Women\'s Wear', 'Accessories', 'Shoes', 'Bags', 'Jewelry'],
+    'Home & Garden': ['Furniture', 'Decor', 'Tools', 'Plants', 'Kitchen', 'Bathroom'],
+    'Sports': ['Equipment', 'Apparel', 'Footwear', 'Accessories', 'Fitness', 'Outdoor'],
+    'Books': ['Fiction', 'Non-Fiction', 'Educational', 'Comics', 'Children', 'Reference'],
+    'Health': ['Supplements', 'Personal Care', 'Fitness', 'Medical', 'Beauty', 'Wellness'],
+    'Automotive': ['Parts', 'Accessories', 'Tools', 'Care', 'Electronics', 'Tires'],
+    'Toys': ['Educational', 'Action Figures', 'Dolls', 'Games', 'Outdoor', 'Electronic'],
   };
 
   return (
@@ -49,24 +48,32 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
             alt={product.name}
             className="h-64 w-full object-cover object-center group-hover:scale-105 transition-transform duration-300"
           />
-          {/* Overlay for category info */}
-          <div className={`absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300 ${
+          {/* Overlay showing ALL categories and subcategories */}
+          <div className={`absolute inset-0 bg-black bg-opacity-90 flex items-center justify-center transition-opacity duration-300 overflow-y-auto ${
             isHovered ? 'opacity-100' : 'opacity-0'
           }`}>
-            <div className="text-white text-center p-4">
-              <div className="flex items-center justify-center mb-2">
+            <div className="text-white text-center p-4 max-h-full overflow-y-auto">
+              <div className="flex items-center justify-center mb-3">
                 <Tag className="h-4 w-4 mr-2" />
-                <span className="font-semibold">{product.category}</span>
+                <span className="font-bold text-lg">All Categories</span>
               </div>
-              <div className="text-sm">
-                <p className="mb-1">Subcategories:</p>
-                <div className="flex flex-wrap justify-center gap-1">
-                  {getSubcategories(product.category).map((sub, index) => (
-                    <span key={index} className="bg-white bg-opacity-20 px-2 py-1 rounded text-xs">
-                      {sub}
-                    </span>
-                  ))}
-                </div>
+              <div className="grid grid-cols-2 gap-3 text-xs">
+                {Object.entries(allCategoriesData).map(([category, subcategories]) => (
+                  <div key={category} className="text-left">
+                    <div className={`font-semibold mb-1 ${
+                      category === product.category ? 'text-green-400' : 'text-white'
+                    }`}>
+                      {category}
+                    </div>
+                    <div className="space-y-1">
+                      {subcategories.map((sub, index) => (
+                        <div key={index} className="bg-white bg-opacity-10 px-2 py-1 rounded text-xs">
+                          {sub}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -91,9 +98,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
                 <span className="text-sm font-medium">Category: {product.category}</span>
               </div>
               <div>
-                <p className="text-sm text-gray-600 mb-2">Available subcategories:</p>
+                <p className="text-sm text-gray-600 mb-2">Current category subcategories:</p>
                 <div className="flex flex-wrap gap-1">
-                  {getSubcategories(product.category).map((sub, index) => (
+                  {(allCategoriesData[product.category as keyof typeof allCategoriesData] || ['General', 'Popular']).map((sub, index) => (
                     <span key={index} className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">
                       {sub}
                     </span>

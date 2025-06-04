@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
@@ -20,17 +19,16 @@ interface IndexProps {
 const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
   const { products, isLoading } = useProducts();
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [isHovered, setIsHovered] = useState(false);
 
-  // Auto-rotate products every 3 seconds when not hovered
+  // Auto-rotate products every 2 seconds continuously
   useEffect(() => {
-    if (products.length > 0 && !isHovered) {
+    if (products.length > 0) {
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
-      }, 3000);
+      }, 2000);
       return () => clearInterval(interval);
     }
-  }, [products.length, isHovered]);
+  }, [products.length]);
 
   const getVisibleProducts = () => {
     if (products.length === 0) return [];
@@ -79,29 +77,26 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
         </div>
       </section>
 
-      {/* Featured Products with Animation */}
+      {/* Featured Products with Automatic Animation */}
       <section className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Products</h2>
-            <p className="text-gray-600">Check out our most popular items - hover to pause rotation</p>
+            <p className="text-gray-600">Watch our products showcase - automatically rotating every 2 seconds</p>
           </div>
           {isLoading ? (
             <div className="text-center">
               <p>Loading featured products...</p>
             </div>
           ) : featuredProducts.length > 0 ? (
-            <div 
-              className="grid grid-cols-1 md:grid-cols-3 gap-8"
-              onMouseEnter={() => setIsHovered(true)}
-              onMouseLeave={() => setIsHovered(false)}
-            >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {featuredProducts.map((product, index) => (
                 <div
                   key={`${product.id}-${currentIndex}`}
-                  className="transform transition-all duration-500 ease-in-out animate-fade-in"
+                  className="transform transition-all duration-700 ease-in-out animate-fade-in"
                   style={{
-                    animationDelay: `${index * 100}ms`,
+                    animationDelay: `${index * 150}ms`,
+                    transform: 'translateX(0)',
                   }}
                 >
                   <ProductCard
@@ -123,17 +118,16 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
             </div>
           )}
           
-          {/* Product navigation dots */}
-          {products.length > 3 && (
+          {/* Product navigation indicator */}
+          {products.length > 0 && (
             <div className="flex justify-center mt-8 space-x-2">
-              {Array.from({ length: Math.ceil(products.length / 3) }).map((_, index) => (
-                <button
+              {products.map((_, index) => (
+                <div
                   key={index}
-                  onClick={() => setCurrentIndex(index * 3)}
-                  className={`w-3 h-3 rounded-full transition-colors ${
-                    Math.floor(currentIndex / 3) === index
-                      ? 'bg-green-600'
-                      : 'bg-gray-300 hover:bg-gray-400'
+                  className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                    index === currentIndex
+                      ? 'bg-green-600 scale-125'
+                      : 'bg-gray-300'
                   }`}
                 />
               ))}
