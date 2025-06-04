@@ -53,7 +53,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             </Link>
           </div>
           
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-gray-700 hover:text-green-600 transition-colors">
               Home
             </Link>
@@ -61,7 +61,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-green-600 transition-colors bg-transparent hover:bg-transparent data-[state=open]:bg-transparent">
+                  <NavigationMenuTrigger className="text-gray-700 hover:text-green-600 transition-colors bg-transparent hover:bg-transparent data-[state=open]:bg-transparent h-auto p-0 font-normal">
                     Products
                   </NavigationMenuTrigger>
                   <NavigationMenuContent>

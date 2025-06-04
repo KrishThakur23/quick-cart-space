@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { useState } from "react";
 import { AuthProvider } from "./contexts/AuthContext";
 import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Cart from "./components/Cart";
 import Index from "./pages/Index";
 import Products from "./pages/Products";
@@ -79,7 +80,7 @@ const App = () => {
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen bg-gray-50 flex flex-col">
               <Header 
                 cartItemCount={cartItemCount} 
                 onCartClick={() => setIsCartOpen(true)} 
@@ -91,16 +92,19 @@ const App = () => {
                 onUpdateQuantity={updateQuantity}
                 onRemoveItem={removeItem}
               />
-              <Routes>
-                <Route path="/" element={<Index onAddToCart={addToCart} />} />
-                <Route path="/products" element={<Products onAddToCart={addToCart} />} />
-                <Route path="/product/:id" element={<ProductDetail onAddToCart={addToCart} />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <main className="flex-grow">
+                <Routes>
+                  <Route path="/" element={<Index onAddToCart={addToCart} />} />
+                  <Route path="/products" element={<Products onAddToCart={addToCart} />} />
+                  <Route path="/product/:id" element={<ProductDetail onAddToCart={addToCart} />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </main>
+              <Footer />
             </div>
           </BrowserRouter>
         </AuthProvider>
