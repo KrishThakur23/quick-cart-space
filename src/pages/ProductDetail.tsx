@@ -4,6 +4,7 @@ import { useParams, Navigate } from 'react-router-dom';
 import { useProducts } from '../hooks/useProducts';
 import { ShoppingBag, Star, Package } from 'lucide-react';
 import OrderForm from '../components/OrderForm';
+import ProductCard from '../components/ProductCard';
 
 interface Product {
   id: number;
@@ -27,6 +28,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
     const hexId = parseInt(p.id.slice(0, 8), 16).toString(16).padStart(8, '0');
     return hexId === id;
   });
+
+  // Get suggested products from the same category, excluding current product
+  const suggestedProducts = product ? products.filter(p => 
+    p.category === product.category && p.id !== product.id
+  ).slice(0, 4) : [];
 
   if (isLoading) {
     return (
@@ -115,6 +121,32 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
           </div>
         </div>
       </div>
+
+      {/* Suggested Products Section */}
+      {suggestedProducts.length > 0 && (
+        <div className="mt-16">
+          <div className="border-t pt-16">
+            <h2 className="text-2xl font-bold text-gray-900 mb-8">
+              More from {product.category}
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {suggestedProducts.map((suggestedProduct) => (
+                <ProductCard
+                  key={suggestedProduct.id}
+                  product={{
+                    id: parseInt(suggestedProduct.id.slice(0, 8), 16),
+                    name: suggestedProduct.name,
+                    price: suggestedProduct.price,
+                    image: suggestedProduct.image || '',
+                    category: suggestedProduct.category
+                  }}
+                  onAddToCart={onAddToCart}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       <OrderForm
         product={{
