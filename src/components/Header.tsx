@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Settings, ChevronDown } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,8 +48,12 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center">
-            <Link to="/" className="text-2xl font-bold text-green-600">
-              Bonemart
+            <Link to="/" className="flex items-center">
+              <img 
+                src="https://bonemart.wordpress.com/wp-content/uploads/2025/05/whatsapp-image-2025-05-17-at-6.50.36-pm-1.jpeg" 
+                alt="Bonemart Logo" 
+                className="h-10 w-auto object-contain"
+              />
             </Link>
           </div>
           
