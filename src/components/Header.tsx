@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Settings } from 'lucide-react';
@@ -46,13 +45,14 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   return (
     <header className="bg-white shadow-sm border-b">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+        <div className="flex justify-between items-center h-20">
           <div className="flex items-center">
-            <Link to="/" className="flex items-center">
+            <Link to="/" className="flex items-center bg-white p-2 rounded">
               <img 
                 src="https://bonemart.wordpress.com/wp-content/uploads/2025/05/whatsapp-image-2025-05-17-at-6.50.36-pm-1.jpeg" 
                 alt="Bonemart Logo" 
-                className="h-14 w-auto object-contain border-0"
+                className="h-16 w-auto object-contain bg-white"
+                style={{ border: 'none', outline: 'none' }}
               />
             </Link>
           </div>
