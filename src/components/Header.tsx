@@ -65,9 +65,11 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
             <NavigationMenu>
               <NavigationMenuList>
                 <NavigationMenuItem>
-                  <NavigationMenuTrigger className="text-gray-700 hover:text-green-600 transition-colors bg-transparent hover:bg-transparent data-[state=open]:bg-transparent h-auto p-0 font-normal">
-                    Products
-                  </NavigationMenuTrigger>
+                  <Link to="/products">
+                    <NavigationMenuTrigger className="text-gray-700 hover:text-green-600 transition-colors bg-transparent hover:bg-transparent data-[state=open]:bg-transparent h-auto p-0 font-normal">
+                      Products
+                    </NavigationMenuTrigger>
+                  </Link>
                   <NavigationMenuContent>
                     <div className="grid w-[400px] gap-3 p-4 md:w-[500px] md:grid-cols-2 lg:w-[600px]">
                       <div className="col-span-2">
