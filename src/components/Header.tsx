@@ -52,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
               <img 
                 src="https://bonemart.wordpress.com/wp-content/uploads/2025/05/whatsapp-image-2025-05-17-at-6.50.36-pm-1.jpeg" 
                 alt="Bonemart Logo" 
-                className="h-10 w-auto object-contain"
+                className="h-14 w-auto object-contain"
               />
             </Link>
           </div>
