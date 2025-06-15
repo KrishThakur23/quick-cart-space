@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
@@ -45,8 +46,8 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
 
   return (
     <div>
-      {/* Hero Section */}
-      <Hero />
+      {/* Hero Section - Large Sliding Poster */}
+      <Hero onAddToCart={onAddToCart} />
 
       {/* Features Section */}
       <section className="py-16 bg-white">
