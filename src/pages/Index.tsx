@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Hero from '../components/Hero';
 import ProductCard from '../components/ProductCard';
@@ -21,12 +20,12 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
   const { products, isLoading } = useProducts();
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Auto-rotate products every 2 seconds continuously
+  // Auto-rotate products every 5 seconds (increased from 2 seconds)
   useEffect(() => {
     if (products.length > 0) {
       const interval = setInterval(() => {
         setCurrentIndex((prevIndex) => (prevIndex + 1) % products.length);
-      }, 2000);
+      }, 5000); // Changed from 2000 to 5000 milliseconds
       return () => clearInterval(interval);
     }
   }, [products.length]);
@@ -83,7 +82,7 @@ const Index: React.FC<IndexProps> = ({ onAddToCart }) => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">Featured Products</h2>
-            <p className="text-gray-600">Watch our products showcase - automatically rotating every 2 seconds</p>
+            <p className="text-gray-600">Watch our products showcase - automatically rotating every 5 seconds</p>
           </div>
           {isLoading ? (
             <div className="text-center">
