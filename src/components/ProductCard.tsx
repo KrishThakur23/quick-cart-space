@@ -79,7 +79,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         
         <p className="text-sm text-gray-500 mt-1 group-hover:text-gray-700 transition-colors duration-300">{product.category}</p>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">${product.price}</span>
+          <span className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">₹{product.price}</span>
           <button
             onClick={() => onAddToCart(product)}
             className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 transition-all duration-300 text-sm font-medium transform hover:scale-110 hover:animate-glow active:scale-95"
