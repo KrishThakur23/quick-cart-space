@@ -95,10 +95,10 @@ const Hero: React.FC<HeroProps> = ({ onAddToCart }) => {
                     </p>
                     <div className="flex items-center mb-8">
                       <span className="text-3xl md:text-4xl font-bold text-green-400">
-                        ${product.price}
+                        ₹{product.price}
                       </span>
                       <span className="ml-3 text-gray-300 line-through text-xl">
-                        ${(product.price * 1.3).toFixed(2)}
+                        ₹{(product.price * 1.3).toFixed(2)}
                       </span>
                     </div>
                     <div className="flex flex-col sm:flex-row gap-4">
