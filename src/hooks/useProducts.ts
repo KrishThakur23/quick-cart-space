@@ -7,10 +7,11 @@ export interface Product {
   name: string;
   price: number;
   image: string | null;
+  images?: string[]; // Added images array
   category: string;
   description: string | null;
   features: string[] | null;
-  user_id: string; // Added user_id property
+  user_id: string;
 }
 
 export const useProducts = () => {

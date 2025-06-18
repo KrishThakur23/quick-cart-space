@@ -26,7 +26,7 @@ const Dashboard = () => {
     name: '',
     price: '',
     category: '',
-    image: '',
+    images: [] as string[],
     description: '',
     features: ''
   });
@@ -49,7 +49,8 @@ const Dashboard = () => {
       name: formData.name,
       price: parseFloat(formData.price),
       category: formData.category,
-      image: formData.image,
+      image: formData.images[0] || null, // Keep first image as main image for compatibility
+      images: formData.images, // Store all images
       description: formData.description,
       features: formData.features ? formData.features.split(',').map(f => f.trim()) : [],
       user_id: user.id
@@ -85,7 +86,7 @@ const Dashboard = () => {
         name: '',
         price: '',
         category: '',
-        image: '',
+        images: [],
         description: '',
         features: ''
       });
@@ -107,7 +108,7 @@ const Dashboard = () => {
       name: product.name,
       price: product.price.toString(),
       category: product.category,
-      image: product.image || '',
+      images: product.images || (product.image ? [product.image] : []),
       description: product.description || '',
       features: product.features ? product.features.join(', ') : ''
     });
@@ -160,7 +161,7 @@ const Dashboard = () => {
       name: '',
       price: '',
       category: '',
-      image: '',
+      images: [],
       description: '',
       features: ''
     });
@@ -234,9 +235,13 @@ const Dashboard = () => {
                 <CardContent className="p-8">
                   <form onSubmit={handleSubmit} className="space-y-6">
                     <ImageUpload
-                      onImageUploaded={(url) => setFormData({...formData, image: url})}
-                      currentImage={formData.image}
-                      onImageRemoved={() => setFormData({...formData, image: ''})}
+                      onImagesUploaded={(urls) => setFormData({...formData, images: urls})}
+                      currentImages={formData.images}
+                      onImageRemoved={(index) => {
+                        const newImages = formData.images.filter((_, i) => i !== index);
+                        setFormData({...formData, images: newImages});
+                      }}
+                      maxImages={5}
                     />
                     
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -328,12 +333,19 @@ const Dashboard = () => {
                 {userProducts.map((product) => (
                   <Card key={product.id} className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 bg-white">
                     <CardContent className="p-0">
-                      {product.image && (
-                        <img
-                          src={product.image}
-                          alt={product.name}
-                          className="w-full h-48 object-cover rounded-t-lg"
-                        />
+                      {(product.images?.length > 0 || product.image) && (
+                        <div className="relative">
+                          <img
+                            src={product.images?.[0] || product.image}
+                            alt={product.name}
+                            className="w-full h-48 object-cover rounded-t-lg"
+                          />
+                          {product.images?.length > 1 && (
+                            <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                              +{product.images.length - 1} more
+                            </div>
+                          )}
+                        </div>
                       )}
                       <div className="p-6">
                         <h3 className="font-semibold text-lg mb-2 text-gray-900">{product.name}</h3>

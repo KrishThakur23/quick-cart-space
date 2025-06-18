@@ -5,47 +5,57 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, X, ImageIcon } from 'lucide-react';
+import { Upload, X, ImageIcon, Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface ImageUploadProps {
-  onImageUploaded: (url: string) => void;
-  currentImage?: string;
-  onImageRemoved: () => void;
+  onImagesUploaded: (urls: string[]) => void;
+  currentImages?: string[];
+  onImageRemoved: (index: number) => void;
+  maxImages?: number;
 }
 
 export const ImageUpload: React.FC<ImageUploadProps> = ({ 
-  onImageUploaded, 
-  currentImage, 
-  onImageRemoved 
+  onImagesUploaded, 
+  currentImages = [], 
+  onImageRemoved,
+  maxImages = 5
 }) => {
   const { user } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
 
-  const uploadImage = async (file: File) => {
+  const uploadImages = async (files: File[]) => {
     if (!user) return;
 
     setUploading(true);
+    const uploadedUrls: string[] = [];
+
     try {
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/${Date.now()}.${fileExt}`;
+      for (const file of files) {
+        const fileExt = file.name.split('.').pop();
+        const fileName = `${user.id}/${Date.now()}-${Math.random()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from('product-images')
+          .upload(fileName, file);
+
+        if (uploadError) throw uploadError;
+
+        const { data } = supabase.storage
+          .from('product-images')
+          .getPublicUrl(fileName);
+
+        uploadedUrls.push(data.publicUrl);
+      }
+
+      const newImages = [...currentImages, ...uploadedUrls];
+      onImagesUploaded(newImages);
       
-      const { error: uploadError } = await supabase.storage
-        .from('product-images')
-        .upload(fileName, file);
-
-      if (uploadError) throw uploadError;
-
-      const { data } = supabase.storage
-        .from('product-images')
-        .getPublicUrl(fileName);
-
-      onImageUploaded(data.publicUrl);
       toast({
         title: "Success",
-        description: "Image uploaded successfully",
+        description: `${files.length} image(s) uploaded successfully`,
       });
     } catch (error: any) {
       toast({
@@ -59,9 +69,20 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      uploadImage(file);
+    const files = Array.from(e.target.files || []);
+    const remainingSlots = maxImages - currentImages.length;
+    
+    if (files.length > remainingSlots) {
+      toast({
+        title: "Too many images",
+        description: `You can only upload ${remainingSlots} more image(s)`,
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    if (files.length > 0) {
+      uploadImages(files);
     }
   };
 
@@ -80,43 +101,69 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     e.stopPropagation();
     setDragActive(false);
 
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      uploadImage(file);
+    const files = Array.from(e.dataTransfer.files).filter(file => 
+      file.type.startsWith('image/')
+    );
+    
+    const remainingSlots = maxImages - currentImages.length;
+    
+    if (files.length > remainingSlots) {
+      toast({
+        title: "Too many images",
+        description: `You can only upload ${remainingSlots} more image(s)`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (files.length > 0) {
+      uploadImages(files);
     } else {
       toast({
-        title: "Invalid file",
-        description: "Please select an image file",
+        title: "Invalid files",
+        description: "Please select image files only",
         variant: "destructive",
       });
     }
   };
 
+  const canUploadMore = currentImages.length < maxImages;
+
   return (
     <div className="space-y-4">
-      <Label htmlFor="image">Product Image</Label>
+      <Label htmlFor="images">Product Images ({currentImages.length}/{maxImages})</Label>
       
-      {currentImage ? (
-        <div className="relative group">
-          <img
-            src={currentImage}
-            alt="Product preview"
-            className="w-full h-48 object-cover rounded-lg border-2 border-gray-200"
-          />
-          <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
-            <Button
-              type="button"
-              variant="destructive"
-              size="sm"
-              onClick={onImageRemoved}
-              className="bg-red-500 hover:bg-red-600"
-            >
-              <X className="h-4 w-4 mr-1" />
-              Remove
-            </Button>
-          </div>
+      {currentImages.length > 0 && (
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {currentImages.map((image, index) => (
+            <div key={index} className="relative group">
+              <img
+                src={image}
+                alt={`Product preview ${index + 1}`}
+                className="w-full h-32 object-cover rounded-lg border-2 border-gray-200"
+              />
+              <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex items-center justify-center">
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  onClick={() => onImageRemoved(index)}
+                  className="bg-red-500 hover:bg-red-600"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </div>
+              {index === 0 && (
+                <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded">
+                  Main
+                </div>
+              )}
+            </div>
+          ))}
         </div>
-      ) : (
+      )}
+
+      {canUploadMore && (
         <div
           className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
             dragActive
@@ -134,11 +181,12 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             </div>
             <div>
               <p className="text-gray-600 mb-2">
-                Drag and drop an image here, or click to select
+                Drag and drop images here, or click to select
               </p>
               <Input
                 type="file"
                 accept="image/*"
+                multiple
                 onChange={handleFileSelect}
                 className="hidden"
                 id="image-upload"
@@ -151,12 +199,21 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 disabled={uploading}
                 className="bg-white hover:bg-gray-50"
               >
-                <Upload className="h-4 w-4 mr-2" />
-                {uploading ? 'Uploading...' : 'Choose Image'}
+                {currentImages.length > 0 ? (
+                  <>
+                    <Plus className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Add More Images'}
+                  </>
+                ) : (
+                  <>
+                    <Upload className="h-4 w-4 mr-2" />
+                    {uploading ? 'Uploading...' : 'Choose Images'}
+                  </>
+                )}
               </Button>
             </div>
             <p className="text-xs text-gray-400">
-              Supports JPG, PNG, GIF up to 10MB
+              Supports JPG, PNG, GIF up to 10MB each. Max {maxImages} images.
             </p>
           </div>
         </div>
