@@ -67,6 +67,7 @@ export type Database = {
           features: string[] | null
           id: string
           image: string | null
+          images: string[] | null
           name: string
           price: number
           updated_at: string
@@ -79,6 +80,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           image?: string | null
+          images?: string[] | null
           name: string
           price: number
           updated_at?: string
@@ -91,6 +93,7 @@ export type Database = {
           features?: string[] | null
           id?: string
           image?: string | null
+          images?: string[] | null
           name?: string
           price?: number
           updated_at?: string
