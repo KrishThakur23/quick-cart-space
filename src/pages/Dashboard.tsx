@@ -257,7 +257,7 @@ const Dashboard = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="price" className="text-gray-700 font-medium">Price ($)</Label>
+                        <Label htmlFor="price" className="text-gray-700 font-medium">Price (₹)</Label>
                         <Input
                           id="price"
                           type="number"
