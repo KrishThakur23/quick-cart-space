@@ -83,7 +83,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
           </div>
 
           <div className="text-3xl font-bold text-gray-900">
-            ${product.price}
+            ₹{product.price}
           </div>
 
           <div>
