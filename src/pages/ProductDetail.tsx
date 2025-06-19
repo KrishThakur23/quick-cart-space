@@ -371,6 +371,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
                             <Check className="h-4 w-4 text-green-600" />
                             <span>Reliable performance</span>
                           </li>
+                          <li className="flex items-center space-x-2">
+                            <Check className="h-4 w-4 text-green-600" />
+                            <span>32000 R.P.M</span>
+                          </li>
                         </ul>
                       </div>
                       <div>
