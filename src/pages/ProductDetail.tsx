@@ -250,7 +250,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
                 <Shield className="h-5 w-5 text-green-600" />
-                <span className="text-sm font-medium">2 Year Warranty</span>
+                <span className="text-sm font-medium">6 Month Warranty</span>
               </div>
               <div className="flex items-center space-x-3 p-3 bg-white rounded-lg border">
                 <Truck className="h-5 w-5 text-blue-600" />
