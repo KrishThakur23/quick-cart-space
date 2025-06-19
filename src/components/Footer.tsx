@@ -1,9 +1,14 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
+import { useProducts } from '@/hooks/useProducts';
 
 const Footer: React.FC = () => {
+  const { products } = useProducts();
+  
+  // Get all unique categories from actual products
+  const categories = Array.from(new Set(products.map(p => p.category))).sort();
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -39,7 +44,7 @@ const Footer: React.FC = () => {
                 Home
               </Link>
               <Link to="/products" className="text-gray-300 hover:text-green-400 transition-colors block">
-                All Products
+                All Products ({products.length})
               </Link>
               <Link to="/about" className="text-gray-300 hover:text-green-400 transition-colors block">
                 About Us
@@ -54,24 +59,30 @@ const Footer: React.FC = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold text-green-400">Categories</h4>
             <div className="space-y-2">
-              <Link to="/products?category=Electronics" className="text-gray-300 hover:text-green-400 transition-colors block">
-                Electronics
-              </Link>
-              <Link to="/products?category=Clothing" className="text-gray-300 hover:text-green-400 transition-colors block">
-                Clothing
-              </Link>
-              <Link to="/products?category=Home%20%26%20Garden" className="text-gray-300 hover:text-green-400 transition-colors block">
-                Home & Garden
-              </Link>
-              <Link to="/products?category=Sports" className="text-gray-300 hover:text-green-400 transition-colors block">
-                Sports
-              </Link>
-              <Link to="/products?category=Books" className="text-gray-300 hover:text-green-400 transition-colors block">
-                Books
-              </Link>
-              <Link to="/products?category=Health" className="text-gray-300 hover:text-green-400 transition-colors block">
-                Health
-              </Link>
+              {categories.length > 0 ? (
+                categories.slice(0, 6).map((category) => {
+                  const categoryCount = products.filter(p => p.category === category).length;
+                  return (
+                    <Link 
+                      key={category}
+                      to={`/products?category=${encodeURIComponent(category)}`} 
+                      className="text-gray-300 hover:text-green-400 transition-colors block flex justify-between items-center"
+                    >
+                      <span>{category}</span>
+                      <span className="text-xs text-gray-500">({categoryCount})</span>
+                    </Link>
+                  );
+                })
+              ) : (
+                <div className="text-gray-400 text-sm">
+                  No categories available yet
+                </div>
+              )}
+              {categories.length > 6 && (
+                <Link to="/products" className="text-green-400 hover:text-green-300 transition-colors block text-sm">
+                  View all categories →
+                </Link>
+              )}
             </div>
           </div>
 

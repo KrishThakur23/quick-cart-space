@@ -1,8 +1,8 @@
-
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProducts } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -26,22 +26,14 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   const { user, signOut, loading } = useAuth();
+  const { products } = useProducts();
 
   const handleSignOut = async () => {
     await signOut();
   };
 
-  // All available categories
-  const categories = [
-    'Electronics',
-    'Clothing', 
-    'Home & Garden',
-    'Sports',
-    'Books',
-    'Health',
-    'Automotive',
-    'Toys'
-  ];
+  // Get all unique categories from actual products
+  const categories = Array.from(new Set(products.map(p => p.category))).sort();
 
   return (
     <header className="bg-white shadow-sm border-b animate-slide-in-left">
@@ -82,20 +74,34 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
                         >
                           <div className="text-sm font-medium leading-none">All Products</div>
                           <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                            Browse our complete collection of products
+                            Browse our complete collection of products ({products.length} items)
                           </p>
                         </Link>
                       </div>
-                      {categories.map((category, index) => (
-                        <Link
-                          key={category}
-                          to={`/products?category=${encodeURIComponent(category)}`}
-                          className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground transform hover:scale-105 animate-fade-in-up"
-                          style={{ animationDelay: `${index * 50}ms` }}
-                        >
-                          <div className="text-sm font-medium leading-none">{category}</div>
-                        </Link>
-                      ))}
+                      {categories.length > 0 ? (
+                        categories.map((category, index) => {
+                          const categoryCount = products.filter(p => p.category === category).length;
+                          return (
+                            <Link
+                              key={category}
+                              to={`/products?category=${encodeURIComponent(category)}`}
+                              className="block select-none space-y-1 rounded-md p-3 leading-none no-underline outline-none transition-all duration-300 hover:bg-accent hover:text-accent-foreground focus:bg-accent focus:text-accent-foreground transform hover:scale-105 animate-fade-in-up"
+                              style={{ animationDelay: `${index * 50}ms` }}
+                            >
+                              <div className="text-sm font-medium leading-none flex justify-between items-center">
+                                <span>{category}</span>
+                                <span className="text-xs text-muted-foreground bg-gray-100 px-2 py-1 rounded-full">
+                                  {categoryCount}
+                                </span>
+                              </div>
+                            </Link>
+                          );
+                        })
+                      ) : (
+                        <div className="col-span-2 p-3 text-center text-sm text-muted-foreground">
+                          No categories available yet
+                        </div>
+                      )}
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
