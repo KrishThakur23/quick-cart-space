@@ -1,7 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShoppingCart, User, LogOut, Settings } from 'lucide-react';
+import { ShoppingCart, User, LogOut, Settings, Store, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useProfile } from '@/hooks/useProfile';
 import { useProducts } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   const { user, signOut, loading } = useAuth();
+  const { profile, isOwner } = useProfile();
   const { products } = useProducts();
 
   const handleSignOut = async () => {
@@ -119,17 +121,20 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
           </nav>
 
           <div className="flex items-center space-x-4 animate-slide-in-right">
-            <button
-              onClick={onCartClick}
-              className="relative p-2 text-gray-700 hover:text-green-600 transition-all duration-300 transform hover:scale-110 hover:animate-glow"
-            >
-              <ShoppingCart className="h-6 w-6" />
-              {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-bounce-in">
-                  {cartItemCount}
-                </span>
-              )}
-            </button>
+            {/* Cart - Only show for customers */}
+            {(!profile || profile.role === 'customer') && (
+              <button
+                onClick={onCartClick}
+                className="relative p-2 text-gray-700 hover:text-green-600 transition-all duration-300 transform hover:scale-110 hover:animate-glow"
+              >
+                <ShoppingCart className="h-6 w-6" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-green-600 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center animate-bounce-in">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+            )}
 
             {!loading && (
               <>
@@ -138,20 +143,41 @@ const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="sm" className="flex items-center space-x-2 transition-all duration-300 transform hover:scale-105">
                         <User className="h-4 w-4" />
-                        <span className="hidden sm:inline">Account</span>
+                        <span className="hidden sm:inline">
+                          {profile?.full_name || user.email?.split('@')[0]}
+                        </span>
+                        {isOwner && (
+                          <Store className="h-4 w-4 text-green-600" />
+                        )}
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="animate-fade-in">
                       <DropdownMenuItem disabled>
-                        {user.email}
+                        <div className="flex flex-col">
+                          <span>{user.email}</span>
+                          <span className="text-xs text-gray-500 capitalize">
+                            {profile?.role || 'customer'}
+                          </span>
+                        </div>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem asChild>
-                        <Link to="/dashboard" className="flex items-center transition-all duration-300 hover:translate-x-1">
-                          <Settings className="h-4 w-4 mr-2" />
-                          Dashboard
-                        </Link>
-                      </DropdownMenuItem>
+                      
+                      {isOwner ? (
+                        <DropdownMenuItem asChild>
+                          <Link to="/dashboard" className="flex items-center transition-all duration-300 hover:translate-x-1">
+                            <Package className="h-4 w-4 mr-2" />
+                            Owner Dashboard
+                          </Link>
+                        </DropdownMenuItem>
+                      ) : (
+                        <DropdownMenuItem asChild>
+                          <Link to="/profile" className="flex items-center transition-all duration-300 hover:translate-x-1">
+                            <Settings className="h-4 w-4 mr-2" />
+                            Profile
+                          </Link>
+                        </DropdownMenuItem>
+                      )}
+                      
                       <DropdownMenuItem onClick={handleSignOut} className="transition-all duration-300 hover:translate-x-1">
                         <LogOut className="h-4 w-4 mr-2" />
                         Sign Out
