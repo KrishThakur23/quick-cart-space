@@ -1,6 +1,4 @@
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 
 export interface UserProfile {
   id: string;
@@ -12,57 +10,54 @@ export interface UserProfile {
 }
 
 export const useProfile = () => {
-  const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchProfile = async () => {
-    if (!user) {
-      setProfile(null);
-      setIsLoading(false);
-      return;
-    }
-
-    setIsLoading(true);
-    setError(null);
+  // For now, we'll return mock data since we need to implement authentication
+  // This will be updated when we implement the auth system
+  useEffect(() => {
+    const mockProfile: UserProfile = {
+      id: 'mock-user-id',
+      email: 'demo@example.com',
+      full_name: 'Demo User',
+      role: 'owner', // Set as owner for demo purposes
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+    };
     
-    const { data, error: fetchError } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (fetchError) {
-      setError('Failed to fetch profile');
-      console.error('Error fetching profile:', fetchError);
-    } else {
-      setProfile(data);
-    }
-    
+    setProfile(mockProfile);
     setIsLoading(false);
+  }, []);
+
+  const fetchProfile = async () => {
+    // Will be implemented with proper auth system
   };
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
-    if (!user) return { error: 'No user logged in' };
+    try {
+      if (!profile) return { error: 'No profile found' };
+      
+      const response = await fetch(`/api/profiles/${profile.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(updates),
+      });
 
-    const { error } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', user.id);
+      if (!response.ok) {
+        throw new Error('Failed to update profile');
+      }
 
-    if (error) {
+      const updatedProfile = await response.json();
+      setProfile(updatedProfile);
+      return { error: null };
+    } catch (error) {
       console.error('Error updating profile:', error);
-      return { error: error.message };
+      return { error: 'Failed to update profile' };
     }
-
-    await fetchProfile();
-    return { error: null };
   };
-
-  useEffect(() => {
-    fetchProfile();
-  }, [user]);
 
   return { 
     profile, 

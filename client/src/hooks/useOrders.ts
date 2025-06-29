@@ -1,6 +1,5 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 
 export interface Order {
   id: string;
@@ -30,41 +29,41 @@ export const useOrders = () => {
     setIsLoading(true);
     setError(null);
     
-    const { data, error: fetchError } = await supabase
-      .from('orders')
-      .select(`
-        *,
-        products (
-          name,
-          price,
-          image
-        )
-      `)
-      .order('created_at', { ascending: false });
-
-    if (fetchError) {
+    try {
+      const response = await fetch('/api/orders');
+      if (!response.ok) {
+        throw new Error('Failed to fetch orders');
+      }
+      const data = await response.json();
+      setOrders(data || []);
+    } catch (fetchError) {
       setError('Failed to fetch orders');
       console.error('Error fetching orders:', fetchError);
-    } else {
-      setOrders(data || []);
     }
     
     setIsLoading(false);
   };
 
   const updateOrderStatus = async (orderId: string, status: string) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status, updated_at: new Date().toISOString() })
-      .eq('id', orderId);
+    try {
+      const response = await fetch(`/api/orders/${orderId}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status }),
+      });
 
-    if (error) {
+      if (!response.ok) {
+        throw new Error('Failed to update order status');
+      }
+
+      await fetchOrders();
+      return { error: null };
+    } catch (error) {
       console.error('Error updating order status:', error);
       return { error };
     }
-
-    await fetchOrders();
-    return { error: null };
   };
 
   const createOrder = async (orderData: {
@@ -76,19 +75,29 @@ export const useOrders = () => {
     customer_address?: string;
     user_id: string;
   }) => {
-    // Create order with 'paid' status since payment was processed
-    const { data, error } = await supabase
-      .from('orders')
-      .insert([{ ...orderData, status: 'paid' }])
-      .select();
+    try {
+      const response = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...orderData,
+          status: 'paid',
+        }),
+      });
 
-    if (error) {
+      if (!response.ok) {
+        throw new Error('Failed to create order');
+      }
+
+      const data = await response.json();
+      await fetchOrders();
+      return { data, error: null };
+    } catch (error) {
       console.error('Error creating order:', error);
-      return { error };
+      return { data: null, error };
     }
-
-    await fetchOrders();
-    return { data, error: null };
   };
 
   useEffect(() => {

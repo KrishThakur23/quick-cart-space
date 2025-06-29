@@ -1,7 +1,5 @@
 
 import React, { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
-import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -21,46 +19,33 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
   onImageRemoved,
   maxImages = 5
 }) => {
-  const { user } = useAuth();
   const { toast } = useToast();
   const [uploading, setUploading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
 
   const uploadImages = async (files: File[]) => {
-    if (!user) return;
-
     setUploading(true);
     const uploadedUrls: string[] = [];
 
     try {
+      // Mock image upload - in a real app, this would upload to storage
       for (const file of files) {
-        const fileExt = file.name.split('.').pop();
-        const fileName = `${user.id}/${Date.now()}-${Math.random()}.${fileExt}`;
-        
-        const { error: uploadError } = await supabase.storage
-          .from('product-images')
-          .upload(fileName, file);
-
-        if (uploadError) throw uploadError;
-
-        const { data } = supabase.storage
-          .from('product-images')
-          .getPublicUrl(fileName);
-
-        uploadedUrls.push(data.publicUrl);
+        // Create object URL for preview (temporary solution)
+        const objectUrl = URL.createObjectURL(file);
+        uploadedUrls.push(objectUrl);
       }
 
       const newImages = [...currentImages, ...uploadedUrls];
       onImagesUploaded(newImages);
       
       toast({
-        title: "Success",
-        description: `${files.length} image(s) uploaded successfully`,
+        title: "Images Added",
+        description: `${files.length} image(s) added successfully (mock upload)`,
       });
     } catch (error: any) {
       toast({
         title: "Error",
-        description: error.message,
+        description: "Failed to process images",
         variant: "destructive",
       });
     } finally {

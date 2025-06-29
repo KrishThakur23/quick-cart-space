@@ -1,17 +1,18 @@
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 
 export interface Product {
   id: string;
   name: string;
   price: number;
   image: string | null;
-  images?: string[]; // Added images array
+  images?: string[];
   category: string;
   description: string | null;
   features: string[] | null;
   user_id: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export const useProducts = () => {
@@ -23,16 +24,16 @@ export const useProducts = () => {
     setIsLoading(true);
     setError(null);
     
-    const { data, error: fetchError } = await supabase
-      .from('products')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (fetchError) {
+    try {
+      const response = await fetch('/api/products');
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
+      }
+      const data = await response.json();
+      setProducts(data || []);
+    } catch (fetchError) {
       setError('Failed to fetch products');
       console.error('Error fetching products:', fetchError);
-    } else {
-      setProducts(data || []);
     }
     
     setIsLoading(false);

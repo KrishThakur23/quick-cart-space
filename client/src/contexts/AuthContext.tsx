@@ -1,6 +1,18 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { User, Session } from '@supabase/supabase-js';
-import { supabase } from '@/integrations/supabase/client';
+
+interface User {
+  id: string;
+  email?: string;
+  user_metadata?: {
+    full_name?: string;
+    role?: string;
+  };
+}
+
+interface Session {
+  user: User;
+  access_token: string;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -27,53 +39,43 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Set up auth state listener
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        console.log('Auth state changed:', event, session);
-        setSession(session);
-        setUser(session?.user ?? null);
-        setLoading(false);
+    // Mock user for demo purposes
+    const mockUser: User = {
+      id: 'mock-user-id',
+      email: 'demo@example.com',
+      user_metadata: {
+        full_name: 'Demo User',
+        role: 'owner',
       }
-    );
+    };
+    
+    const mockSession: Session = {
+      user: mockUser,
+      access_token: 'mock-token'
+    };
 
-    // Check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => subscription.unsubscribe();
+    setUser(mockUser);
+    setSession(mockSession);
+    setLoading(false);
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, role: string = 'customer') => {
-    const redirectUrl = `${window.location.origin}/`;
-    
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: redirectUrl,
-        data: {
-          full_name: fullName,
-          role: role
-        }
-      }
-    });
-    return { error };
+    // Mock signup - in a real app, this would create an account
+    console.log('Mock signup:', { email, fullName, role });
+    return { error: null };
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password
-    });
-    return { error };
+    // Mock signin - in a real app, this would authenticate
+    console.log('Mock signin:', { email });
+    return { error: null };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
+    // Mock signout - in a real app, this would clear session
+    setUser(null);
+    setSession(null);
+    console.log('Mock signout');
   };
 
   const value = {

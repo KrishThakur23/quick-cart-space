@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Navigate } from 'react-router-dom';
 import { useProducts } from '@/hooks/useProducts';
 import { useOrders } from '@/hooks/useOrders';
-import { supabase } from '@/integrations/supabase/client';
+
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -58,23 +58,30 @@ const Dashboard = () => {
 
     try {
       if (editingProduct) {
-        const { error } = await supabase
-          .from('products')
-          .update(productData)
-          .eq('id', editingProduct.id);
+        const response = await fetch(`/api/products/${editingProduct.id}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
         
-        if (error) throw error;
+        if (!response.ok) throw new Error('Failed to update product');
         
         toast({
           title: "Success",
           description: "Product updated successfully",
         });
       } else {
-        const { error } = await supabase
-          .from('products')
-          .insert([productData]);
+        const response = await fetch('/api/products', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(productData),
+        });
         
-        if (error) throw error;
+        if (!response.ok) throw new Error('Failed to create product');
         
         toast({
           title: "Success",
@@ -118,12 +125,11 @@ const Dashboard = () => {
   const handleDelete = async (productId: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
-        const { error } = await supabase
-          .from('products')
-          .delete()
-          .eq('id', productId);
+        const response = await fetch(`/api/products/${productId}`, {
+          method: 'DELETE',
+        });
         
-        if (error) throw error;
+        if (!response.ok) throw new Error('Failed to delete product');
         
         toast({
           title: "Success",
