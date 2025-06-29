@@ -46,9 +46,29 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const signUp = async (email: string, password: string, fullName: string, role: string = 'customer') => {
-    // Mock signup - create user profile
-    const mockUser: User = {
+    // Check if user already exists
+    const existingUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
+    const userExists = existingUsers.find((u: any) => u.email === email);
+    
+    if (userExists) {
+      return { error: { message: 'User already exists with this email. Please sign in instead.' } };
+    }
+
+    // Create new user
+    const newUser = {
       id: `user-${Date.now()}`,
+      email,
+      password,
+      fullName,
+      role,
+    };
+    
+    // Store in localStorage
+    existingUsers.push(newUser);
+    localStorage.setItem('mockUsers', JSON.stringify(existingUsers));
+
+    const mockUser: User = {
+      id: newUser.id,
       email,
       user_metadata: {
         full_name: fullName,
@@ -68,13 +88,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signIn = async (email: string, password: string) => {
-    // Mock signin - create authenticated session
+    // Check if user exists in localStorage (simple mock storage)
+    const existingUsers = JSON.parse(localStorage.getItem('mockUsers') || '[]');
+    const user = existingUsers.find((u: any) => u.email === email && u.password === password);
+    
+    if (!user) {
+      return { error: { message: 'Invalid email or password. Please sign up first.' } };
+    }
+
     const mockUser: User = {
-      id: `user-${Date.now()}`,
-      email,
+      id: user.id,
+      email: user.email,
       user_metadata: {
-        full_name: 'Demo User',
-        role: 'owner', // Set as owner so users can manage products
+        full_name: user.fullName,
+        role: user.role,
       }
     };
     
