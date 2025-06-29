@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a full-stack e-commerce web application built with React, TypeScript, and Express.js. The application features a modern product marketplace called "Bonemart" with user authentication, product management, shopping cart functionality, and order processing.
+This is a full-stack e-commerce web application built with React, TypeScript, and Express.js. The application features a modern product marketplace called "Bonemart" with user authentication, product management, shopping cart functionality, and order processing. Successfully migrated from Lovable to Replit with PostgreSQL backend.
 
 ## System Architecture
 
@@ -99,6 +99,13 @@ This is a full-stack e-commerce web application built with React, TypeScript, an
 
 Changelog:
 - June 29, 2025. Initial setup
+- June 29, 2025. Successfully migrated from Lovable to Replit
+  - Migrated from Supabase to PostgreSQL with Drizzle ORM
+  - Created comprehensive REST API with Express.js
+  - Updated all React hooks to use new API endpoints
+  - Removed all Supabase dependencies
+  - Added sample products to database
+  - Fixed authentication system to work properly
 
 ## User Preferences
 

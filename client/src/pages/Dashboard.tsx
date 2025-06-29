@@ -339,16 +339,16 @@ const Dashboard = () => {
                 {userProducts.map((product) => (
                   <Card key={product.id} className="shadow-lg hover:shadow-xl transition-all duration-200 border-0 bg-white">
                     <CardContent className="p-0">
-                      {(product.images?.length > 0 || product.image) && (
+                      {((product.images?.length || 0) > 0 || product.image) && (
                         <div className="relative">
                           <img
-                            src={product.images?.[0] || product.image}
+                            src={product.images?.[0] || product.image || ''}
                             alt={product.name}
                             className="w-full h-48 object-cover rounded-t-lg"
                           />
-                          {product.images?.length > 1 && (
+                          {(product.images?.length || 0) > 1 && (
                             <div className="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
-                              +{product.images.length - 1} more
+                              +{(product.images?.length || 0) - 1} more
                             </div>
                           )}
                         </div>

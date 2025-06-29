@@ -14,19 +14,9 @@ export const useProfile = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // For now, we'll return mock data since we need to implement authentication
-  // This will be updated when we implement the auth system
+  // Return null profile when not authenticated
   useEffect(() => {
-    const mockProfile: UserProfile = {
-      id: 'mock-user-id',
-      email: 'demo@example.com',
-      full_name: 'Demo User',
-      role: 'owner', // Set as owner for demo purposes
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
-    };
-    
-    setProfile(mockProfile);
+    setProfile(null);
     setIsLoading(false);
   }, []);
 

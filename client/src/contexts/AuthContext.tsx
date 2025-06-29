@@ -39,13 +39,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock user for demo purposes
+    // Start with no user logged in
+    setUser(null);
+    setSession(null);
+    setLoading(false);
+  }, []);
+
+  const signUp = async (email: string, password: string, fullName: string, role: string = 'customer') => {
+    // Mock signup - create user profile
     const mockUser: User = {
-      id: 'mock-user-id',
-      email: 'demo@example.com',
+      id: `user-${Date.now()}`,
+      email,
       user_metadata: {
-        full_name: 'Demo User',
-        role: 'owner',
+        full_name: fullName,
+        role: role,
       }
     };
     
@@ -56,26 +63,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     setUser(mockUser);
     setSession(mockSession);
-    setLoading(false);
-  }, []);
-
-  const signUp = async (email: string, password: string, fullName: string, role: string = 'customer') => {
-    // Mock signup - in a real app, this would create an account
-    console.log('Mock signup:', { email, fullName, role });
+    console.log('Mock signup successful:', { email, fullName, role });
     return { error: null };
   };
 
   const signIn = async (email: string, password: string) => {
-    // Mock signin - in a real app, this would authenticate
-    console.log('Mock signin:', { email });
+    // Mock signin - create authenticated session
+    const mockUser: User = {
+      id: `user-${Date.now()}`,
+      email,
+      user_metadata: {
+        full_name: 'Demo User',
+        role: 'owner', // Set as owner so users can manage products
+      }
+    };
+    
+    const mockSession: Session = {
+      user: mockUser,
+      access_token: 'mock-token'
+    };
+
+    setUser(mockUser);
+    setSession(mockSession);
+    console.log('Mock signin successful:', { email });
     return { error: null };
   };
 
   const signOut = async () => {
-    // Mock signout - in a real app, this would clear session
     setUser(null);
     setSession(null);
-    console.log('Mock signout');
+    console.log('Mock signout successful');
   };
 
   const value = {
