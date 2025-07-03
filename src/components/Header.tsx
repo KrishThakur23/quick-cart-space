@@ -2,7 +2,6 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShoppingCart, User, LogOut, Settings, Store, Package } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { useProfile } from '@/hooks/useProfile';
 import { useProducts } from '@/hooks/useProducts';
 import { Button } from '@/components/ui/button';
 import {
