@@ -11,10 +11,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Store, User, Shield } from 'lucide-react';
 
 const Auth: React.FC = () => {
+  const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [fullName, setFullName] = useState('');
-  const [role, setRole] = useState<'customer' | 'owner'>('customer');
   const [loading, setLoading] = useState(false);
   const { signIn, signUp, user } = useAuth();
   const navigate = useNavigate();
@@ -53,7 +53,7 @@ const Auth: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await signUp(email, password, fullName, role);
+    const { error } = await signUp(email, password, fullName);
     
     if (error) {
       toast({
@@ -184,36 +184,8 @@ const Auth: React.FC = () => {
                       minLength={6}
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="role">Account Type</Label>
-                    <Select value={role} onValueChange={(value: 'customer' | 'owner') => setRole(value)}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select account type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="customer">
-                          <div className="flex items-center gap-2">
-                            <User className="h-4 w-4" />
-                            <div>
-                              <div className="font-medium">Customer</div>
-                              <div className="text-xs text-gray-500">Browse and purchase products</div>
-                            </div>
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="owner">
-                          <div className="flex items-center gap-2">
-                            <Store className="h-4 w-4" />
-                            <div>
-                              <div className="font-medium">Store Owner</div>
-                              <div className="text-xs text-gray-500">Sell products and manage orders</div>
-                            </div>
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <Button type="submit" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
-                    {loading ? 'Creating account...' : 'Create Account'}
+                  <Button type="submit" className="w-full" disabled={loading}>
+                    {loading ? 'Creating account...' : 'Sign Up'}
                   </Button>
                 </form>
               </CardContent>
