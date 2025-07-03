@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
@@ -54,7 +55,9 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
         case 'name':
           return a.name.localeCompare(b.name);
         case 'newest':
-          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+          const aDate = a.created_at ? new Date(a.created_at).getTime() : 0;
+          const bDate = b.created_at ? new Date(b.created_at).getTime() : 0;
+          return bDate - aDate;
         default:
           return 0;
       }
@@ -97,9 +100,9 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
       <div className="bg-white border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">Our Products</h1>
+            <h1 className="text-4xl font-bold text-gray-900 mb-4">Dental Products & Equipment</h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Discover our comprehensive collection of premium products, carefully curated for quality and performance
+              Discover our comprehensive collection of premium dental products and equipment, carefully curated for dental professionals
             </p>
           </div>
 
@@ -109,7 +112,7 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
               <Input
                 type="text"
-                placeholder="Search products, categories, or brands..."
+                placeholder="Search dental products, categories, or brands..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="pl-10 pr-4 py-3 w-full border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"

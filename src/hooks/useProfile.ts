@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -6,7 +7,7 @@ export interface UserProfile {
   id: string;
   email: string | null;
   full_name: string | null;
-  role: 'customer' | 'owner' | 'admin';
+  role?: 'customer' | 'owner' | 'admin';
   created_at: string;
   updated_at: string;
 }
@@ -37,7 +38,12 @@ export const useProfile = () => {
       setError('Failed to fetch profile');
       console.error('Error fetching profile:', fetchError);
     } else {
-      setProfile(data);
+      // Add default role if not present
+      const profileWithRole = {
+        ...data,
+        role: data.role || 'customer'
+      };
+      setProfile(profileWithRole);
     }
     
     setIsLoading(false);

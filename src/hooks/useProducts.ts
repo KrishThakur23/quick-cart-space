@@ -1,18 +1,19 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { medicalProducts } from '@/data/medicalProducts';
+import { dentalProducts } from '@/data/dentalProducts';
 
 export interface Product {
   id: string;
   name: string;
   price: number;
   image: string | null;
-  images?: string[]; // Added images array
+  images?: string[];
   category: string;
   description: string | null;
   features: string[] | null;
   user_id: string;
+  created_at?: string;
 }
 
 export const useProducts = () => {
@@ -33,21 +34,22 @@ export const useProducts = () => {
       setError('Failed to fetch products');
       console.error('Error fetching products:', fetchError);
     } else {
-      // Convert medical products to match the Product interface
-      const convertedMedicalProducts = medicalProducts.map(product => ({
-        id: product.id.toString().padStart(32, '0'), // Convert to string and pad to match UUID format
+      // Convert dental products to match the Product interface
+      const convertedDentalProducts = dentalProducts.map(product => ({
+        id: product.id.toString().padStart(32, '0'),
         name: product.name,
         price: product.price,
         image: product.image,
-        images: [product.image], // Convert single image to array
+        images: [product.image],
         category: product.category,
         description: product.description,
         features: product.features,
-        user_id: 'system', // System-generated products
+        user_id: 'system',
+        created_at: new Date().toISOString(),
       }));
 
-      // Combine Supabase products with medical products
-      const allProducts = [...(data || []), ...convertedMedicalProducts];
+      // Combine Supabase products with dental products
+      const allProducts = [...(data || []), ...convertedDentalProducts];
       setProducts(allProducts);
     }
     
