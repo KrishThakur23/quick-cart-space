@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import OrderForm from '../components/OrderForm';
 import ProductCard from '../components/ProductCard';
+import ImageZoom from '../components/ImageZoom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -135,26 +136,26 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
             <div className="relative bg-white rounded-2xl shadow-lg overflow-hidden">
               {productImages.length > 0 ? (
                 <>
-                  <img
+                  <ImageZoom
                     src={productImages[selectedImageIndex]}
                     alt={product.name}
-                    className="w-full h-96 lg:h-[500px] object-cover"
+                    className="w-full h-96 lg:h-[500px] rounded-2xl"
                   />
                   {productImages.length > 1 && (
                     <>
                       <button
                         onClick={prevImage}
-                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+                        className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
                       >
                         <ChevronLeft className="h-5 w-5 text-gray-700" />
                       </button>
                       <button
                         onClick={nextImage}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110"
+                        className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-lg transition-all duration-200 hover:scale-110 z-10"
                       >
                         <ChevronRight className="h-5 w-5 text-gray-700" />
                       </button>
-                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2">
+                      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex space-x-2 z-10">
                         {productImages.map((_, index) => (
                           <button
                             key={index}
@@ -169,7 +170,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
                   )}
                 </>
               ) : (
-                <div className="w-full h-96 lg:h-[500px] bg-gray-200 flex items-center justify-center">
+                <div className="w-full h-96 lg:h-[500px] bg-gray-200 flex items-center justify-center rounded-2xl">
                   <Package className="h-16 w-16 text-gray-400" />
                 </div>
               )}
@@ -186,10 +187,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
                       index === selectedImageIndex ? 'ring-2 ring-green-500' : ''
                     }`}
                   >
-                    <img
+                    <ImageZoom
                       src={image}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-20 object-cover"
+                      className="w-full h-20"
                     />
                   </button>
                 ))}

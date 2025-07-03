@@ -38,11 +38,11 @@ export const useProfile = () => {
       setError('Failed to fetch profile');
       console.error('Error fetching profile:', fetchError);
     } else {
-      // Add default role if not present
+      // Add default role if not present - cast data to include role property
       const profileWithRole = {
         ...data,
-        role: data.role || 'customer'
-      };
+        role: (data as any).role || 'customer'
+      } as UserProfile;
       setProfile(profileWithRole);
     }
     
