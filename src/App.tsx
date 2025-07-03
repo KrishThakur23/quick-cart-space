@@ -44,17 +44,7 @@ const AppContent = () => {
   const { toast } = useToast();
   const { profile } = useProfile();
 
-  const addToCart = (product: Product) => {
-    // Only allow customers to add to cart
-    if (profile?.role === 'owner' || profile?.role === 'admin') {
-      toast({
-        title: "Not Available",
-        description: "Store owners cannot add items to cart. Switch to customer view to purchase.",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const addToCart = (product: Product) => {    
     setCartItems(prevItems => {
       const existingItem = prevItems.find(item => item.id === product.id);
       if (existingItem) {
