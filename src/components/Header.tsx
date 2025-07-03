@@ -31,7 +31,6 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ cartItemCount, onCartClick }) => {
   const { user, signOut, loading } = useAuth();
-  const { profile, isOwner } = useProfile();
   const { products } = useProducts();
 
   const handleSignOut = async () => {
