@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import ProductCard from '../components/ProductCard';
 import { useProducts } from '../hooks/useProducts';
@@ -26,14 +25,28 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
   const [sortBy, setSortBy] = useState('name');
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
   
-  const categories = ['All', ...Array.from(new Set(products.map(p => p.category)))];
+  // Get categories only from products that actually exist
+  const categoriesWithCounts = products.reduce((acc, product) => {
+    if (acc[product.category]) {
+      acc[product.category]++;
+    } else {
+      acc[product.category] = 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+  
+  const categories = ['All', ...Object.keys(categoriesWithCounts).sort()];
   
   // Get URL params for category filter
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const categoryParam = urlParams.get('category');
-    if (categoryParam && categories.includes(categoryParam)) {
+    if (categoryParam && Object.keys(categoriesWithCounts).includes(categoryParam)) {
       setSelectedCategory(categoryParam);
+    } else if (categoryParam && !Object.keys(categoriesWithCounts).includes(categoryParam)) {
+      // If URL has a category that doesn't exist in products, reset to All
+      setSelectedCategory('All');
+      window.history.replaceState({}, '', '/products');
     }
   }, [products]);
 
@@ -143,7 +156,7 @@ const Products: React.FC<ProductsProps> = ({ onAddToCart }) => {
                   {category}
                   {category !== 'All' && (
                     <Badge variant="secondary" className="ml-2 text-xs">
-                      {products.filter(p => p.category === category).length}
+                      {categoriesWithCounts[category]}
                     </Badge>
                   )}
                 </Button>

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Facebook, Twitter, Instagram, Linkedin } from 'lucide-react';
@@ -6,8 +7,18 @@ import { useProducts } from '@/hooks/useProducts';
 const Footer: React.FC = () => {
   const { products } = useProducts();
   
-  // Get all unique categories from actual products
-  const categories = Array.from(new Set(products.map(p => p.category))).sort();
+  // Get all unique categories from actual products with product counts
+  const categoriesWithCounts = products.reduce((acc, product) => {
+    if (acc[product.category]) {
+      acc[product.category]++;
+    } else {
+      acc[product.category] = 1;
+    }
+    return acc;
+  }, {} as Record<string, number>);
+  
+  // Sort categories alphabetically
+  const categories = Object.keys(categoriesWithCounts).sort();
 
   return (
     <footer className="bg-gray-900 text-white">
@@ -61,7 +72,7 @@ const Footer: React.FC = () => {
             <div className="space-y-2">
               {categories.length > 0 ? (
                 categories.slice(0, 6).map((category) => {
-                  const categoryCount = products.filter(p => p.category === category).length;
+                  const categoryCount = categoriesWithCounts[category];
                   return (
                     <Link 
                       key={category}
