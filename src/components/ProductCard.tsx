@@ -8,6 +8,8 @@ interface Product {
   id: number;
   name: string;
   price: number;
+  actual_price?: number;
+  discount_percentage?: number;
   image: string;
   category: string;
 }
@@ -125,7 +127,21 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onAddToCart }) => {
         
         <p className="text-sm text-gray-500 mt-1 group-hover:text-gray-700 transition-colors duration-300">{product.category}</p>
         <div className="flex items-center justify-between mt-3">
-          <span className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">₹{product.price}</span>
+          <div className="flex flex-col">
+            {product.discount_percentage && product.discount_percentage > 0 ? (
+              <div className="flex items-center space-x-2">
+                <span className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">₹{product.price}</span>
+                <span className="text-sm text-gray-500 line-through">₹{product.actual_price}</span>
+              </div>
+            ) : (
+              <span className="text-xl font-bold text-gray-900 group-hover:text-green-600 transition-colors duration-300">₹{product.actual_price || product.price}</span>
+            )}
+            {product.discount_percentage && product.discount_percentage > 0 && (
+              <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-xs font-medium inline-block w-fit">
+                {product.discount_percentage}% OFF
+              </span>
+            )}
+          </div>
           <button
             onClick={handleAddToCart}
             disabled={isAdding}

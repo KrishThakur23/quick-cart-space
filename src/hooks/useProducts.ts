@@ -7,6 +7,8 @@ export interface Product {
   id: string;
   name: string;
   price: number;
+  actual_price?: number;
+  discount_percentage?: number;
   image: string | null;
   images?: string[];
   category: string;
@@ -14,6 +16,7 @@ export interface Product {
   features: string[] | null;
   user_id: string;
   created_at?: string;
+  created_from_dashboard?: boolean;
 }
 
 export const useProducts = () => {
@@ -28,29 +31,15 @@ export const useProducts = () => {
     const { data, error: fetchError } = await supabase
       .from('products')
       .select('*')
+      .eq('created_from_dashboard', true)
       .order('created_at', { ascending: false });
 
     if (fetchError) {
       setError('Failed to fetch products');
       console.error('Error fetching products:', fetchError);
     } else {
-      // Convert dental products to match the Product interface
-      const convertedDentalProducts = dentalProducts.map(product => ({
-        id: product.id.toString().padStart(32, '0'),
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        images: [product.image],
-        category: product.category,
-        description: product.description,
-        features: product.features,
-        user_id: 'system',
-        created_at: new Date().toISOString(),
-      }));
-
-      // Combine Supabase products with dental products
-      const allProducts = [...(data || []), ...convertedDentalProducts];
-      setProducts(allProducts);
+      // Only show products created from dashboard
+      setProducts(data || []);
     }
     
     setIsLoading(false);

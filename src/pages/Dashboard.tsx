@@ -24,7 +24,8 @@ const Dashboard = () => {
   const [showAddForm, setShowAddForm] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
-    price: '',
+    actualPrice: '',
+    discountPercentage: '0',
     category: '',
     images: [] as string[],
     description: '',
@@ -45,15 +46,27 @@ const Dashboard = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
+    const actualPrice = parseFloat(formData.actualPrice);
+    const discountPercent = parseInt(formData.discountPercentage) || 0;
+    const discountedPrice = actualPrice * (1 - discountPercent / 100);
+    
+    // Check for existing category (case-insensitive)
+    const existingCategory = userProducts.find(p => 
+      p.category.toLowerCase() === formData.category.toLowerCase()
+    )?.category || formData.category;
+    
     const productData = {
       name: formData.name,
-      price: parseFloat(formData.price),
-      category: formData.category,
-      image: formData.images[0] || null, // Keep first image as main image for compatibility
-      images: formData.images, // Store all images
+      price: discountedPrice,
+      actual_price: actualPrice,
+      discount_percentage: discountPercent,
+      category: existingCategory,
+      image: formData.images[0] || null,
+      images: formData.images,
       description: formData.description,
-      features: formData.features ? formData.features.split(';').map(f => f.trim()) : [],
-      user_id: user.id
+      features: formData.features ? formData.features.split(';').map(f => f.trim()).filter(f => f) : [],
+      user_id: user.id,
+      created_from_dashboard: true
     };
 
     try {
@@ -84,7 +97,8 @@ const Dashboard = () => {
       
       setFormData({
         name: '',
-        price: '',
+        actualPrice: '',
+        discountPercentage: '0',
         category: '',
         images: [],
         description: '',
@@ -106,11 +120,12 @@ const Dashboard = () => {
     setEditingProduct(product);
     setFormData({
       name: product.name,
-      price: product.price.toString(),
+      actualPrice: (product.actual_price || product.price).toString(),
+      discountPercentage: (product.discount_percentage || 0).toString(),
       category: product.category,
       images: product.images || (product.image ? [product.image] : []),
       description: product.description || '',
-      features: product.features ? product.features.join(', ') : ''
+      features: product.features ? product.features.join('; ') : ''
     });
     setShowAddForm(true);
   };
@@ -118,6 +133,10 @@ const Dashboard = () => {
   const handleDelete = async (productId: string) => {
     if (confirm('Are you sure you want to delete this product?')) {
       try {
+        // Get the product category before deletion
+        const productToDelete = userProducts.find(p => p.id === productId);
+        const categoryToCheck = productToDelete?.category;
+        
         const { error } = await supabase
           .from('products')
           .delete()
@@ -125,10 +144,25 @@ const Dashboard = () => {
         
         if (error) throw error;
         
-        toast({
-          title: "Success",
-          description: "Product deleted successfully",
-        });
+        // Check if this was the last product in the category
+        if (categoryToCheck) {
+          const remainingInCategory = userProducts.filter(p => 
+            p.category === categoryToCheck && p.id !== productId
+          );
+          
+          if (remainingInCategory.length === 0) {
+            toast({
+              title: "Success",
+              description: `Product deleted successfully. Category "${categoryToCheck}" removed as it had no products left.`,
+            });
+          } else {
+            toast({
+              title: "Success",
+              description: "Product deleted successfully",
+            });
+          }
+        }
+        
         refetch();
       } catch (error: any) {
         toast({
@@ -159,7 +193,8 @@ const Dashboard = () => {
   const resetForm = () => {
     setFormData({
       name: '',
-      price: '',
+      actualPrice: '',
+      discountPercentage: '0',
       category: '',
       images: [],
       description: '',
@@ -244,7 +279,7 @@ const Dashboard = () => {
                       maxImages={5}
                     />
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <div className="space-y-2">
                         <Label htmlFor="name" className="text-gray-700 font-medium">Product Name</Label>
                         <Input
@@ -257,16 +292,29 @@ const Dashboard = () => {
                         />
                       </div>
                       <div className="space-y-2">
-                        <Label htmlFor="price" className="text-gray-700 font-medium">Price (₹)</Label>
+                        <Label htmlFor="actualPrice" className="text-gray-700 font-medium">Actual Price (₹)</Label>
                         <Input
-                          id="price"
+                          id="actualPrice"
                           type="number"
                           step="0.01"
-                          value={formData.price}
-                          onChange={(e) => setFormData({...formData, price: e.target.value})}
+                          value={formData.actualPrice}
+                          onChange={(e) => setFormData({...formData, actualPrice: e.target.value})}
                           required
                           className="border-gray-200 focus:border-green-500 focus:ring-green-500"
                           placeholder="0.00"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="discountPercentage" className="text-gray-700 font-medium">Discount (%)</Label>
+                        <Input
+                          id="discountPercentage"
+                          type="number"
+                          min="0"
+                          max="100"
+                          value={formData.discountPercentage}
+                          onChange={(e) => setFormData({...formData, discountPercentage: e.target.value})}
+                          className="border-gray-200 focus:border-green-500 focus:ring-green-500"
+                          placeholder="0"
                         />
                       </div>
                     </div>
@@ -297,14 +345,15 @@ const Dashboard = () => {
                     
                     <div className="space-y-2">
                       <Label htmlFor="features" className="text-gray-700 font-medium">Features</Label>
-                      <Input
+                      <Textarea
                         id="features"
                         value={formData.features}
                         onChange={(e) => setFormData({...formData, features: e.target.value})}
                         className="border-gray-200 focus:border-green-500 focus:ring-green-500"
                         placeholder="Feature 1; Feature 2; Feature 3"
+                        rows={3}
                       />
-                      <p className="text-sm text-gray-500">Separate features with ;</p>
+                      <p className="text-sm text-gray-500">Separate features with semicolons (;). Text will wrap automatically for long features.</p>
                     </div>
                     
                     <div className="flex space-x-3 pt-4">
@@ -350,7 +399,19 @@ const Dashboard = () => {
                       <div className="p-6">
                         <h3 className="font-semibold text-lg mb-2 text-gray-900">{product.name}</h3>
                         <p className="text-green-600 text-sm mb-2 font-medium">{product.category}</p>
-                        <p className="text-2xl font-bold text-green-700 mb-4">${product.price}</p>
+                        <div className="mb-4">
+                          {product.discount_percentage && product.discount_percentage > 0 ? (
+                            <div className="flex items-center space-x-2">
+                              <span className="text-2xl font-bold text-green-700">₹{product.price}</span>
+                              <span className="text-lg text-gray-500 line-through">₹{product.actual_price}</span>
+                              <span className="bg-red-100 text-red-600 px-2 py-1 rounded text-sm font-medium">
+                                {product.discount_percentage}% OFF
+                              </span>
+                            </div>
+                          ) : (
+                            <span className="text-2xl font-bold text-green-700">₹{product.actual_price || product.price}</span>
+                          )}
+                        </div>
                         <div className="flex space-x-2">
                           <Button 
                             variant="outline" 

@@ -66,9 +66,12 @@ export type Database = {
       }
       products: {
         Row: {
+          actual_price: number | null
           category: string
           created_at: string
+          created_from_dashboard: boolean | null
           description: string | null
+          discount_percentage: number | null
           features: string[] | null
           id: string
           image: string | null
@@ -79,9 +82,12 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          actual_price?: number | null
           category: string
           created_at?: string
+          created_from_dashboard?: boolean | null
           description?: string | null
+          discount_percentage?: number | null
           features?: string[] | null
           id?: string
           image?: string | null
@@ -92,9 +98,12 @@ export type Database = {
           user_id: string
         }
         Update: {
+          actual_price?: number | null
           category?: string
           created_at?: string
+          created_from_dashboard?: boolean | null
           description?: string | null
+          discount_percentage?: number | null
           features?: string[] | null
           id?: string
           image?: string | null
