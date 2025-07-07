@@ -52,7 +52,7 @@ const Dashboard = () => {
       image: formData.images[0] || null, // Keep first image as main image for compatibility
       images: formData.images, // Store all images
       description: formData.description,
-      features: formData.features ? formData.features.split(',').map(f => f.trim()) : [],
+      features: formData.features ? formData.features.split(';').map(f => f.trim()) : [],
       user_id: user.id
     };
 
@@ -302,9 +302,9 @@ const Dashboard = () => {
                         value={formData.features}
                         onChange={(e) => setFormData({...formData, features: e.target.value})}
                         className="border-gray-200 focus:border-green-500 focus:ring-green-500"
-                        placeholder="Feature 1, Feature 2, Feature 3"
+                        placeholder="Feature 1; Feature 2; Feature 3"
                       />
-                      <p className="text-sm text-gray-500">Separate features with commas</p>
+                      <p className="text-sm text-gray-500">Separate features with ;</p>
                     </div>
                     
                     <div className="flex space-x-3 pt-4">

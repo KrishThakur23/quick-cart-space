@@ -139,7 +139,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
                   <ImageZoom
                     src={productImages[selectedImageIndex]}
                     alt={product.name}
-                    className="w-full h-96 lg:h-[500px] rounded-2xl"
+                    className="w-full max-h-[500px] object-contain rounded-2xl"
                   />
                   {productImages.length > 1 && (
                     <>
@@ -190,7 +190,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
                     <ImageZoom
                       src={image}
                       alt={`${product.name} ${index + 1}`}
-                      className="w-full h-20"
+                      className="w-full h-20 object-contain"
                     />
                   </button>
                 ))}
